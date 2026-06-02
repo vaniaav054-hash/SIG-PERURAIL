@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>¡Quién Sabe Más! SIG — Perurail</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --azul:#1A2B5E;--azul2:#243578;--dorado:#AE7542;--dorado2:#c98d56;
+  --blanco:#fff;--fondo:#f0f2f7;--verde:#27855a;--rojo:#c0392b;
+}
+body{font-family:'Nunito',sans-serif;background:var(--fondo);min-height:100vh;color:var(--azul)}
+
+.screen{display:none!important}
+.screen.on{display:flex!important;flex-direction:column}
+
+/* HEADER */
+header{background:var(--azul);padding:13px 18px;display:flex;align-items:center;
+  gap:11px;box-shadow:0 2px 12px rgba(26,43,94,.35);flex-shrink:0}
+.logo{background:var(--dorado);border-radius:8px;width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:12px;color:#fff;flex-shrink:0}
+.htxt h1{font-size:14px;font-weight:800;color:#fff;line-height:1.2}
+.htxt p{font-size:10px;color:rgba(255,255,255,.5);margin-top:1px}
+
+/* SELECTOR */
+#s-selector{min-height:100vh;background:var(--azul);align-items:center;
+  justify-content:center;padding:30px 20px;text-align:center}
+.sel-logo{background:var(--dorado);border-radius:14px;width:64px;height:64px;
+  display:flex;align-items:center;justify-content:center;font-weight:900;
+  font-size:20px;color:#fff;margin:0 auto 16px}
+.sel-titulo{font-size:28px;font-weight:900;color:#fff;margin-bottom:6px}
+.sel-titulo span{color:var(--dorado)}
+.sel-sub{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:32px;max-width:300px}
+.modo-cards{display:flex;flex-direction:column;gap:14px;width:100%;max-width:360px}
+.modo-card{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);
+  border-radius:16px;padding:20px;text-align:left;cursor:pointer;
+  display:flex;align-items:center;gap:16px;transition:all .2s}
+.modo-card:active{transform:scale(.97)}
+.modo-ico{font-size:36px;flex-shrink:0}
+.modo-txt h3{font-size:16px;font-weight:900;color:#fff;margin-bottom:3px}
+.modo-txt p{font-size:12px;color:rgba(255,255,255,.5);line-height:1.4}
+
+/* PRESENTADOR ESPERA */
+#s-pres-espera{min-height:100vh;background:var(--azul);align-items:center;
+  justify-content:center;padding:30px 20px;text-align:center}
+.cod-box{background:rgba(255,255,255,.08);border:3px solid var(--dorado);
+  border-radius:20px;padding:28px 24px;width:100%;max-width:400px;margin-bottom:28px}
+.cod-lbl{font-size:12px;color:rgba(255,255,255,.6);font-weight:800;
+  text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.cod-num{font-size:80px;font-weight:900;color:var(--dorado);letter-spacing:10px;line-height:1}
+.cod-hint{font-size:12px;color:rgba(255,255,255,.45);margin-top:8px}
+.esp-titulo{font-size:18px;font-weight:800;color:#fff;margin-bottom:16px}
+.jug-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+  max-width:400px;margin-bottom:24px;min-height:50px}
+.jug-chip{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);
+  border-radius:99px;padding:7px 14px;font-size:13px;font-weight:800;color:#fff;
+  animation:popIn .3s ease}
+@keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.btn-grande{background:var(--dorado);color:#fff;border:none;border-radius:14px;
+  padding:18px 0;width:100%;max-width:360px;font-family:'Nunito',sans-serif;
+  font-size:17px;font-weight:900;cursor:pointer;
+  box-shadow:0 6px 20px rgba(174,117,66,.4);transition:transform .1s;margin-bottom:10px}
+.btn-grande:active{transform:scale(.97)}
+.btn-grande:disabled{background:rgba(255,255,255,.15);box-shadow:none;
+  color:rgba(255,255,255,.3);cursor:not-allowed}
+.btn-sec{background:transparent;color:rgba(255,255,255,.5);border:1.5px solid rgba(255,255,255,.2);
+  border-radius:14px;padding:14px 0;width:100%;max-width:360px;
+  font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer}
+
+/* PRESENTADOR PREGUNTA */
+#s-pres-pregunta{min-height:100vh;background:var(--azul);padding:20px 20px 30px}
+.pq-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.pq-num{font-size:14px;font-weight:800;color:rgba(255,255,255,.7)}
+.pq-timer{font-size:44px;font-weight:900;color:var(--dorado);line-height:1}
+.pq-barra{background:rgba(255,255,255,.1);border-radius:99px;height:7px;
+  margin-bottom:16px;overflow:hidden}
+.pq-barra-fill{height:100%;background:var(--dorado);border-radius:99px;
+  transition:width 1s linear}
+.pq-cat{display:inline-block;background:rgba(174,117,66,.2);border:1.5px solid var(--dorado);
+  border-radius:99px;padding:4px 14px;font-size:11px;font-weight:800;color:var(--dorado);
+  text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px}
+.pq-txt{font-size:22px;font-weight:900;color:#fff;line-height:1.3;margin-bottom:20px}
+.pq-ops{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.pq-op{border-radius:12px;padding:14px 12px;display:flex;align-items:center;gap:10px}
+.pq-op.A{background:#e74c3c}.pq-op.B{background:#3498db}
+.pq-op.C{background:#27ae60}.pq-op.D{background:#f39c12}
+.pq-op-l{width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.2);
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+  font-weight:900;color:#fff;flex-shrink:0}
+.pq-op-t{font-size:14px;font-weight:800;color:#fff;line-height:1.3}
+.resp-live{display:flex;gap:8px;flex-wrap:wrap}
+.resp-cnt{flex:1;min-width:60px;border-radius:10px;padding:8px;text-align:center}
+.resp-cnt.A{background:rgba(231,76,60,.3)}.resp-cnt.B{background:rgba(52,152,219,.3)}
+.resp-cnt.C{background:rgba(39,174,96,.3)}.resp-cnt.D{background:rgba(243,156,18,.3)}
+.resp-cnt .rcn{font-size:24px;font-weight:900;color:#fff}
+.resp-cnt .rcl{font-size:10px;color:rgba(255,255,255,.6);font-weight:700}
+.resp-total{text-align:center;margin-top:10px;font-size:13px;
+  color:rgba(255,255,255,.6);font-weight:700}
+
+/* PRESENTADOR RESULTADO */
+#s-pres-resultado{min-height:100vh;background:var(--azul);padding:20px}
+.pr-correcta{background:rgba(39,174,96,.15);border:2px solid var(--verde);
+  border-radius:16px;padding:18px 20px;margin-bottom:18px}
+.pr-lbl{font-size:12px;color:#6ee9a8;font-weight:800;text-transform:uppercase;
+  letter-spacing:.6px;margin-bottom:5px}
+.pr-txt{font-size:20px;font-weight:900;color:#fff;margin-bottom:4px}
+.pr-exp{font-size:13px;color:rgba(255,255,255,.7);line-height:1.5}
+.rank-mini{margin-bottom:20px}
+.rank-item{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.08);
+  border-radius:12px;padding:12px 16px;margin-bottom:8px}
+.rk-pos{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:14px;font-weight:900;flex-shrink:0}
+.rk-pos.p1{background:gold;color:#333}.rk-pos.p2{background:silver;color:#333}
+.rk-pos.p3{background:#cd7f32;color:#fff}.rk-pos.pN{background:rgba(255,255,255,.15);color:#fff}
+.rk-nombre{flex:1;font-size:15px;font-weight:800;color:#fff}
+.rk-pts{font-size:18px;font-weight:900;color:var(--dorado)}
+.rk-barra-w{width:100%;background:rgba(255,255,255,.08);border-radius:99px;
+  height:5px;margin-top:3px;overflow:hidden}
+.rk-barra{height:100%;background:linear-gradient(90deg,var(--dorado),var(--dorado2));
+  border-radius:99px;transition:width .6s ease}
+
+/* PRESENTADOR FINAL */
+#s-pres-final{min-height:100vh;background:var(--azul);align-items:center;
+  justify-content:center;padding:24px 20px;text-align:center}
+.podio{display:flex;align-items:flex-end;justify-content:center;gap:12px;
+  width:100%;max-width:360px;margin:20px auto}
+.pd-item{flex:1;border-radius:12px 12px 0 0;padding:14px 8px 10px;text-align:center}
+.pd-item.p1{background:linear-gradient(135deg,#f6d365,#fda085);min-height:130px}
+.pd-item.p2{background:linear-gradient(135deg,#c0c0c0,#909090);min-height:100px}
+.pd-item.p3{background:linear-gradient(135deg,#cd7f32,#a0522d);min-height:80px}
+.pd-emoji{font-size:26px;margin-bottom:4px}
+.pd-nombre{font-size:12px;font-weight:900;color:#fff;line-height:1.2;word-break:break-word}
+.pd-pts{font-size:16px;font-weight:900;color:rgba(255,255,255,.9);margin-top:3px}
+.fin-titulo{font-size:24px;font-weight:900;color:#fff;margin-bottom:6px}
+.fin-sub{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:24px}
+
+/* JUGADOR UNIRSE */
+#s-jug-unirse{min-height:100vh;background:var(--azul);align-items:center;
+  justify-content:center;padding:30px 20px;text-align:center}
+.j-form{background:rgba(255,255,255,.08);border-radius:16px;padding:22px 18px;
+  width:100%;max-width:340px;margin-bottom:16px}
+.j-campo{margin-bottom:14px;text-align:left}
+.j-campo label{font-size:11px;font-weight:900;color:var(--dorado);
+  text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
+.j-campo input{width:100%;border:2px solid rgba(255,255,255,.15);border-radius:10px;
+  padding:13px 14px;font-family:'Nunito',sans-serif;font-size:16px;
+  font-weight:700;color:#fff;background:rgba(255,255,255,.08);
+  outline:none;-webkit-appearance:none}
+.j-campo input:focus{border-color:var(--dorado)}
+.j-campo input::placeholder{color:rgba(255,255,255,.3)}
+
+/* JUGADOR ESPERA */
+#s-jug-espera{min-height:100vh;background:var(--azul);align-items:center;
+  justify-content:center;padding:30px 20px;text-align:center}
+.dots{display:flex;gap:8px;justify-content:center;margin-top:20px}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--dorado);
+  animation:bounce .8s infinite ease-in-out}
+.dot:nth-child(2){animation-delay:.15s}.dot:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,80%,100%{transform:scale(.8);opacity:.5}40%{transform:scale(1.2);opacity:1}}
+
+/* JUGADOR PREGUNTA */
+#s-jug-pregunta{min-height:100vh;background:var(--fondo)}
+.jq-header{background:var(--azul);padding:13px 18px;display:flex;
+  justify-content:space-between;align-items:center;flex-shrink:0}
+.jq-num{font-size:12px;font-weight:800;color:rgba(255,255,255,.7)}
+.jq-timer{font-size:32px;font-weight:900;color:var(--dorado)}
+.jq-body{padding:16px 16px 20px;flex:1}
+.jq-cat{display:inline-block;background:rgba(174,117,66,.12);border:1.5px solid rgba(174,117,66,.3);
+  border-radius:99px;padding:4px 12px;font-size:11px;font-weight:800;color:var(--dorado);
+  text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.jq-txt{font-size:17px;font-weight:800;color:var(--azul);line-height:1.35;margin-bottom:16px}
+.jq-ops{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.jq-op{border-radius:14px;padding:20px 10px;display:flex;flex-direction:column;
+  align-items:center;gap:7px;cursor:pointer;border:none;
+  font-family:'Nunito',sans-serif;transition:transform .1s}
+.jq-op:active:not(:disabled){transform:scale(.94)}
+.jq-op.A{background:#e74c3c}.jq-op.B{background:#3498db}
+.jq-op.C{background:#27ae60}.jq-op.D{background:#f39c12}
+.jq-op .jl{width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:900;color:#fff}
+.jq-op .jt{font-size:13px;font-weight:800;color:#fff;text-align:center;line-height:1.3}
+.jq-op:disabled{opacity:.45;cursor:default}
+.jq-op.elegida{opacity:1!important;transform:scale(1.04);
+  box-shadow:0 6px 20px rgba(0,0,0,.25)}
+
+/* JUGADOR FEEDBACK */
+#s-jug-feedback{min-height:100vh;background:var(--fondo);align-items:center;
+  justify-content:center;padding:30px 20px;text-align:center}
+.jf-ico{font-size:72px;margin-bottom:12px;animation:popIn .35s ease}
+.jf-tit{font-size:24px;font-weight:900;margin-bottom:6px}
+.jf-pts{font-size:20px;font-weight:800;color:var(--dorado);margin-bottom:4px}
+.jf-total{font-size:14px;color:#8a93b2;font-weight:700}
+.jf-wait{font-size:12px;color:#aab0c8;margin-top:14px;font-weight:700}
+
+/* JUGADOR RANKING */
+#s-jug-ranking{min-height:100vh;background:var(--fondo);padding:20px 16px}
+.jr-tit{font-size:20px;font-weight:900;color:var(--azul);margin-bottom:14px;text-align:center}
+.mi-puesto{background:var(--azul);border-radius:14px;padding:14px 16px;
+  margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.mp-pos{font-size:30px;font-weight:900;color:var(--dorado)}
+.mp-info{flex:1}
+.mp-nombre{font-size:15px;font-weight:900;color:#fff}
+.mp-pts{font-size:12px;color:rgba(255,255,255,.6);font-weight:700}
+.jr-lista{display:flex;flex-direction:column;gap:8px}
+.jr-item{background:#fff;border-radius:12px;padding:11px 14px;display:flex;
+  align-items:center;gap:10px;box-shadow:0 2px 6px rgba(26,43,94,.07)}
+.jr-item.yo{border:2px solid var(--dorado)}
+.ji-pos{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:12px;font-weight:900;flex-shrink:0}
+.ji-pos.p1{background:gold;color:#333}.ji-pos.p2{background:silver;color:#333}
+.ji-pos.p3{background:#cd7f32;color:#fff}.ji-pos.pN{background:var(--fondo);color:var(--azul)}
+.ji-nombre{flex:1;font-size:13px;font-weight:800;color:var(--azul)}
+.ji-pts{font-size:15px;font-weight:900;color:var(--dorado)}
+
+/* JUGADOR FINAL */
+#s-jug-final{min-height:100vh;background:var(--azul);align-items:center;
+  justify-content:center;padding:30px 20px;text-align:center}
+.jfin-medal{font-size:80px;margin-bottom:8px;animation:popIn .5s ease}
+.jfin-pos{font-size:52px;font-weight:900;color:var(--dorado);line-height:1}
+.jfin-de{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:4px}
+.jfin-nombre{font-size:22px;font-weight:900;color:#fff;margin-bottom:4px}
+.jfin-pts{font-size:18px;font-weight:800;color:var(--dorado);margin-bottom:16px}
+.jfin-msg{font-size:13px;color:rgba(255,255,255,.6);max-width:280px;line-height:1.6}
+
+.footer{text-align:center;font-size:10px;color:rgba(255,255,255,.25);
+  padding:16px;font-weight:600;letter-spacing:.3px;flex-shrink:0}
+.footer-dark{text-align:center;font-size:10px;color:#aab0c8;
+  padding:16px;font-weight:600;letter-spacing:.3px}
+
+.error-msg{background:rgba(192,57,43,.2);border:1.5px solid var(--rojo);
+  border-radius:10px;padding:10px 14px;font-size:13px;color:#f0b4ae;
+  font-weight:700;margin-bottom:12px;display:none}
+</style>
+</head>
+<body>
+
+<!-- SELECTOR -->
+<div id="s-selector" class="screen on">
+  <div class="sel-logo">PR</div>
+  <div class="sel-titulo">¡Quién Sabe Más! <span>SIG</span></div>
+  <p class="sel-sub">Juego de preguntas del Sistema Integrado de Gestión — Perurail</p>
+  <div class="modo-cards">
+    <div class="modo-card" onclick="elegirModo('presentador')">
+      <div class="modo-ico">🖥️</div>
+      <div class="modo-txt">
+        <h3>Soy el Capacitador</h3>
+        <p>Comparte tu pantalla en Teams. Controla el juego y ve el ranking en tiempo real.</p>
+      </div>
+    </div>
+    <div class="modo-card" onclick="elegirModo('jugador')">
+      <div class="modo-ico">📱</div>
+      <div class="modo-txt">
+        <h3>Soy Participante</h3>
+        <p>Ingresa el código de sala y responde desde tu celular.</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer">PERURAIL S.A. | EO&CG — Mejora Continua y SIG | Capacitación Operativa 2026</div>
+</div>
+
+<!-- PRESENTADOR: ESPERA -->
+<div id="s-pres-espera" class="screen">
+  <div class="cod-box">
+    <div class="cod-lbl">Código de sala — dilo en el chat de Teams</div>
+    <div class="cod-num" id="p-codigo">----</div>
+    <div class="cod-hint">Los participantes ingresan este código en su celular</div>
+  </div>
+  <div class="esp-titulo">Participantes: <span id="p-njug" style="color:var(--dorado)">0</span></div>
+  <div class="jug-grid" id="p-jug-grid"></div>
+  <button class="btn-grande" id="btn-iniciar" onclick="presIniciar()" disabled>▶ INICIAR JUEGO</button>
+  <p style="color:rgba(255,255,255,.35);font-size:11px;margin-top:-4px">Mínimo 1 participante</p>
+  <div class="footer">PERURAIL S.A. | EO&CG — Mejora Continua y SIG | Capacitación Operativa 2026</div>
+</div>
+
+<!-- PRESENTADOR: PREGUNTA -->
+<div id="s-pres-pregunta" class="screen" style="padding:20px">
+  <div class="pq-top">
+    <span class="pq-num" id="p-qnum">P 1/10</span>
+    <span class="pq-timer" id="p-timer">20</span>
+  </div>
+  <div class="pq-barra"><div class="pq-barra-fill" id="p-barra" style="width:100%"></div></div>
+  <div class="pq-cat" id="p-cat"></div>
+  <div class="pq-txt" id="p-qtxt"></div>
+  <div class="pq-ops" id="p-ops"></div>
+  <div class="resp-live" id="p-contadores"></div>
+  <div class="resp-total">Respondieron: <span id="p-resp-n" style="color:var(--dorado)">0</span> / <span id="p-resp-t">0</span></div>
+</div>
+
+<!-- PRESENTADOR: RESULTADO PREGUNTA -->
+<div id="s-pres-resultado" class="screen" style="padding:20px">
+  <div class="pr-correcta">
+    <div class="pr-lbl">✅ Respuesta correcta</div>
+    <div class="pr-txt" id="p-resp-txt"></div>
+    <div class="pr-exp" id="p-resp-exp"></div>
+  </div>
+  <div class="rank-mini" id="p-rank-parcial"></div>
+  <button class="btn-grande" id="btn-sig-q" onclick="presSiguiente()">SIGUIENTE →</button>
+  <div class="footer">PERURAIL S.A. | EO&CG — Mejora Continua y SIG | Capacitación Operativa 2026</div>
+</div>
+
+<!-- PRESENTADOR: FINAL -->
+<div id="s-pres-final" class="screen">
+  <div class="fin-titulo">🏆 ¡Fin del juego!</div>
+  <div class="fin-sub">Ranking final de la capacitación</div>
+  <div class="podio" id="p-podio"></div>
+  <div class="rank-mini" id="p-rank-final" style="width:100%;max-width:400px"></div>
+  <button class="btn-grande" onclick="nuevoJuego()">🔁 NUEVO JUEGO</button>
+  <div class="footer">PERURAIL S.A. | EO&CG — Mejora Continua y SIG | Capacitación Operativa 2026</div>
+</div>
+
+<!-- JUGADOR: UNIRSE -->
+<div id="s-jug-unirse" class="screen">
+  <div style="font-size:48px;margin-bottom:14px">🚂</div>
+  <div style="font-size:24px;font-weight:900;color:#fff;margin-bottom:6px">¡Quién Sabe Más! <span style="color:var(--dorado)">SIG</span></div>
+  <p style="font-size:13px;color:rgba(255,255,255,.55);margin-bottom:24px">Ingresa el código del capacitador</p>
+  <div id="j-error" class="error-msg">Código incorrecto o sala no encontrada. Verifica con el capacitador.</div>
+  <div class="j-form">
+    <div class="j-campo">
+      <label>Código de sala (4 dígitos)</label>
+      <input type="text" id="j-cod" placeholder="Ej: 4821" maxlength="4"
+        inputmode="numeric" style="text-align:center;font-size:32px;letter-spacing:8px;font-weight:900">
+    </div>
+    <div class="j-campo">
+      <label>Tu nombre o apodo</label>
+      <input type="text" id="j-nom" placeholder="Ej: Juan P." maxlength="14" autocomplete="off">
+    </div>
+  </div>
+  <button class="btn-grande" onclick="jugUnirse()" id="btn-unirse">UNIRSE →</button>
+  <div class="footer">PERURAIL S.A. | EO&CG — Mejora Continua y SIG | Capacitación Operativa 2026</div>
+</div>
+
+<!-- JUGADOR: ESPERA -->
+<div id="s-jug-espera" class="screen">
+  <div style="font-size:52px;margin-bottom:14px">🎮</div>
+  <div id="j-nom-display" style="font-size:22px;font-weight:900;color:#fff;margin-bottom:6px"></div>
+  <div style="font-size:13px;color:rgba(255,255,255,.55);margin-bottom:6px">¡Ya estás en la sala!</div>
+  <div style="font-size:13px;color:rgba(255,255,255,.4)">Espera que el capacitador inicie el juego</div>
+  <div class="dots" style="margin-top:24px">
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+  </div>
+  <div class="footer">PERURAIL S.A. | EO&CG — Mejora Continua y SIG | Capacitación Operativa 2026</div>
+</div>
+
+<!-- JUGADOR: PREGUNTA -->
+<div id="s-jug-pregunta" class="screen">
+  <div class="jq-header">
+    <span class="jq-num" id="j-qnum">P 1/10</span>
+    <span class="jq-timer" id="j-timer">20</span>
+  </div>
+  <div class="jq-body">
+    <div class="jq-cat" id="j-cat"></div>
+    <div class="jq-txt" id="j-txt"></div>
+    <div class="jq-ops" id="j-ops"></div>
+  </div>
+</div>
+
+<!-- JUGADOR: FEEDBACK -->
+<div id="s-jug-feedback" class="screen">
+  <div class="jf-ico" id="jf-ico">✅</div>
+  <div class="jf-tit" id="jf-tit">¡Correcto!</div>
+  <div class="jf-pts" id="jf-pts">+800 pts</div>
+  <div class="jf-total" id="jf-total">Total: 800 pts</div>
+  <div class="jf-wait">Espera el resultado del capacitador...</div>
+</div>
+
+<!-- JUGADOR: RANKING -->
+<div id="s-jug-ranking" class="screen">
+  <div class="jr-tit">📊 Ranking actual</div>
+  <div class="mi-puesto">
+    <div class="mp-pos" id="jr-mipos">#1</div>
+    <div class="mp-info">
+      <div class="mp-nombre" id="jr-minom"></div>
+      <div class="mp-pts" id="jr-mipts">0 puntos</div>
+    </div>
+  </div>
+  <div class="jr-lista" id="jr-lista"></div>
+  <div class="footer-dark">Espera la siguiente pregunta...</div>
+</div>
+
+<!-- JUGADOR: FINAL -->
+<div id="s-jug-final" class="screen">
+  <div class="jfin-medal" id="jfin-med">🏆</div>
+  <div class="jfin-pos" id="jfin-pos">#1</div>
+  <div class="jfin-de" id="jfin-de">de 5 participantes</div>
+  <div class="jfin-nombre" id="jfin-nom"></div>
+  <div class="jfin-pts" id="jfin-pts">0 puntos</div>
+  <p class="jfin-msg" id="jfin-msg"></p>
+  <div class="footer">PERURAIL S.A. | EO&CG — Mejora Continua y SIG | Capacitación Operativa 2026</div>
+</div>
+
+<script>
+// ═══ PREGUNTAS ═══
+const PQ = [
+  {cat:"¿Qué es el SIG?",q:"¿Qué significa SIG en Perurail?",
+   ops:["Sistema de Inspección General","Sistema Integrado de Gestión","Servicio Interno de Gestión","Sistema de Indicadores"],
+   ok:1,fb:"El SIG es el Sistema Integrado de Gestión — unifica Calidad, SST y Medio Ambiente en un solo sistema."},
+  {cat:"Normas ISO",q:"¿Qué norma protege tu seguridad y salud en el trabajo?",
+   ops:["ISO 14001:2015","ISO 9001:2015","ISO 45001:2018","ISO 31000"],
+   ok:2,fb:"ISO 45001:2018 protege la integridad física y mental de cada persona en Perurail."},
+  {cat:"Normas ISO",q:"La norma ISO 9001:2015 se enfoca en:",
+   ops:["Medio Ambiente","Seguridad y Salud","Calidad","Control de costos"],
+   ok:2,fb:"ISO 9001 garantiza que los servicios de Perurail cumplen lo que el cliente espera."},
+  {cat:"Normas ISO",q:"Ocurre un derrame de combustible. ¿Qué dice la ISO 14001?",
+   ops:["Esperar al siguiente turno","Limpiarlo solo","Actuar con calma y reportarlo","Ignorarlo si es pequeño"],
+   ok:2,fb:"ISO 14001 pide actuar con calma y reportar cualquier derrame ambiental de inmediato."},
+  {cat:"Vocabulario",q:"¿Qué es una No Conformidad?",
+   ops:["Un accidente grave","Algo que salió diferente a lo planificado","Un formato mal llenado","Una propuesta de mejora"],
+   ok:1,fb:"No Conformidad = incumplimiento de un requisito. Aplica a las 3 normas del SIG."},
+  {cat:"Vocabulario",q:"Un Indicador en ROJO significa:",
+   ops:["Todo va bien","Hay que celebrar","No alcanzamos la meta — hay que actuar","Proceso aprobado"],
+   ok:2,fb:"Verde = vamos bien. Rojo = no alcanzamos la meta, ¡hay que actuar!"},
+  {cat:"Política SIG V.07",q:"¿Quién firmó la Política SIG versión 07?",
+   ops:["El Jefe de RRHH","El Área SIG","José Zarate, Gerente General","El Comité de Seguridad"],
+   ok:2,fb:"José Zarate, Gerente General, aprobó la Política SIG V.07 el 18 de marzo de 2026."},
+  {cat:"Política SIG V.07",q:"'Una cultura donde hablar es lo correcto' significa que puedes:",
+   ops:["Hablar más en reuniones","Reportar riesgos sin temor","Saltarte procedimientos","Llegar tarde sin avisar"],
+   ok:1,fb:"Perurail promueve que reportes condiciones inseguras o riesgos sin temor a represalias."},
+  {cat:"¿Qué hago si algo sale mal?",q:"¿Cuál es el orden correcto de los 3 pasos del SIG?",
+   ops:["Reparo → Documento → Informo","Espero → Consulto → Actúo","Detecto → Reporto → El equipo SIG actúa","Fotografío → Publico → Espero"],
+   ok:2,fb:"1) DETECTO, 2) REPORTO a mi supervisor o área SGI, 3) EL EQUIPO SIG investiga y corrige."},
+  {cat:"Tu rol en el SIG",q:"¿Cuál es una responsabilidad del personal operativo?",
+   ops:["Elaborar procedimientos","Aprobar la Política SIG","Segregar residuos según NTP 900.058","Auditar proveedores"],
+   ok:2,fb:"Segregar correctamente los residuos es una de tus 8 responsabilidades en el SIG."}
+];
+
+const TIEMPO = 20;
+
+// ═══ ESTADO ═══
+let modo = null;
+let miCodigo = null;
+let miNombre = null;
+let miPuntos = 0;
+let qActual = 0;
+let ordenPQ = [];
+let timerInt = null;
+let tRestante = TIEMPO;
+let respondio = false;
+let jugadores = {};
+let respCount = 0;
+let pollingInt = null;
+
+// ═══ PANTALLAS ═══
+function ir(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  window.scrollTo(0,0);
+}
+
+// ═══ STORAGE (simula servidor con localStorage compartido via storage events) ═══
+function sala_set(key, val){
+  localStorage.setItem('sala_'+miCodigo+'_'+key, JSON.stringify(val));
+  // Disparar evento para otras pestañas
+  const ev = new StorageEvent('storage',{key:'sala_'+miCodigo+'_'+key, newValue:JSON.stringify(val)});
+  window.dispatchEvent(ev);
+}
+function sala_get(key){
+  const v = localStorage.getItem('sala_'+miCodigo+'_'+key);
+  return v ? JSON.parse(v) : null;
+}
+
+// ═══ POLLING (jugador escucha al presentador) ═══
+function startPolling(){
+  pollingInt = setInterval(()=>{
+    const estado = sala_get('estado');
+    if(!estado) return;
+    if(estado.tipo === 'pregunta' && estado.qNum !== qActual){
+      qActual = estado.qNum;
+      ordenPQ = estado.orden;
+      jugMostrarPregunta();
+    } else if(estado.tipo === 'ranking'){
+      jugMostrarRanking(estado.ranking);
+    } else if(estado.tipo === 'fin'){
+      jugMostrarFinal(estado.ranking);
+      clearInterval(pollingInt);
+    }
+  }, 800);
+}
+
+// ═══ MODO ═══
+function elegirModo(m){
+  modo = m;
+  if(m==='presentador'){
+    miCodigo = Math.floor(1000+Math.random()*9000).toString();
+    // Limpiar sala anterior
+    Object.keys(localStorage).filter(k=>k.startsWith('sala_'+miCodigo)).forEach(k=>localStorage.removeItem(k));
+    sala_set('activa', {ts: Date.now()});
+    sala_set('jugadores', {});
+    sala_set('estado', {tipo:'espera'});
+    document.getElementById('p-codigo').textContent = miCodigo;
+    ir('s-pres-espera');
+    // Presentador también hace polling para ver quién se une
+    pollingInt = setInterval(presActualizarJugadores, 1000);
+  } else {
+    ir('s-jug-unirse');
+  }
+}
+
+// ═══ PRESENTADOR ═══
+function presActualizarJugadores(){
+  const jugs = sala_get('jugadores') || {};
+  const nombres = Object.keys(jugs);
+  const prev = Object.keys(jugadores).length;
+  if(nombres.length !== prev){
+    nombres.forEach(n=>{ if(!jugadores[n]) jugadores[n]={puntos:0}; });
+    const grid = document.getElementById('p-jug-grid');
+    grid.innerHTML = '';
+    nombres.forEach(n=>{
+      const c = document.createElement('div');
+      c.className = 'jug-chip';
+      c.textContent = '🎮 '+n;
+      grid.appendChild(c);
+    });
+    document.getElementById('p-njug').textContent = nombres.length;
+    document.getElementById('btn-iniciar').disabled = nombres.length < 1;
+  }
+  // Ver respuestas durante pregunta
+  const respuestas = sala_get('respuestas_'+qActual) || {};
+  const n = Object.keys(respuestas).length;
+  const el_n = document.getElementById('p-resp-n');
+  if(el_n) el_n.textContent = n;
+  // Actualizar contadores A/B/C/D
+  const letras=['A','B','C','D'];
+  const counts={A:0,B:0,C:0,D:0};
+  Object.values(respuestas).forEach(r=>{ if(r.idx>=0) counts[letras[r.idx]]++; });
+  letras.forEach(l=>{ const el=document.getElementById('cnt-'+l); if(el) el.textContent=counts[l]; });
+  respCount = n;
+  // Auto-terminar si todos respondieron
+  if(n >= Object.keys(jugadores).length && n > 0 && document.getElementById('s-pres-pregunta').classList.contains('on')){
+    clearInterval(timerInt);
+    setTimeout(presTerminarPregunta, 600);
+  }
+}
+
+function presIniciar(){
+  clearInterval(pollingInt);
+  ordenPQ = shuffle([...Array(PQ.length).keys()]).slice(0,10);
+  Object.keys(jugadores).forEach(n=>jugadores[n].puntos=0);
+  qActual = 0;
+  sala_set('estado', {tipo:'pregunta', qNum:0, orden:ordenPQ});
+  pollingInt = setInterval(presActualizarJugadores, 800);
+  presMostrarPregunta();
+  ir('s-pres-pregunta');
+}
+
+function presMostrarPregunta(){
+  const p = PQ[ordenPQ[qActual]];
+  const total = ordenPQ.length;
+  document.getElementById('p-qnum').textContent = `P ${qActual+1}/${total}`;
+  document.getElementById('p-cat').textContent = p.cat;
+  document.getElementById('p-qtxt').textContent = p.q;
+  document.getElementById('p-resp-t').textContent = Object.keys(jugadores).length;
+  document.getElementById('p-resp-n').textContent = '0';
+
+  const cols=['A','B','C','D'];
+  const opsEl=document.getElementById('p-ops');
+  opsEl.innerHTML='';
+  p.ops.forEach((op,i)=>{
+    const d=document.createElement('div');
+    d.className=`pq-op ${cols[i]}`;
+    d.innerHTML=`<div class="pq-op-l">${cols[i]}</div><div class="pq-op-t">${op}</div>`;
+    opsEl.appendChild(d);
+  });
+
+  const cont=document.getElementById('p-contadores');
+  cont.innerHTML='';
+  cols.forEach(c=>{
+    const d=document.createElement('div');
+    d.className=`resp-cnt ${c}`;
+    d.id=`rcnt-${c}`;
+    d.innerHTML=`<div class="rcn" id="cnt-${c}">0</div><div class="rcl">${c}</div>`;
+    cont.appendChild(d);
+  });
+
+  tRestante=TIEMPO;
+  document.getElementById('p-timer').textContent=tRestante;
+  document.getElementById('p-barra').style.width='100%';
+  clearInterval(timerInt);
+  timerInt=setInterval(()=>{
+    tRestante--;
+    document.getElementById('p-timer').textContent=tRestante;
+    document.getElementById('p-barra').style.width=(tRestante/TIEMPO*100)+'%';
+    if(tRestante<=0){ clearInterval(timerInt); presTerminarPregunta(); }
+  },1000);
+}
+
+function presTerminarPregunta(){
+  clearInterval(timerInt);
+  const p = PQ[ordenPQ[qActual]];
+  const respuestas = sala_get('respuestas_'+qActual) || {};
+
+  // Calcular puntos
+  Object.entries(respuestas).forEach(([nombre, r])=>{
+    if(!jugadores[nombre]) return;
+    if(r.idx === p.ok){
+      const pts = Math.max(400, Math.round(1000*(1 - r.t/TIEMPO)));
+      jugadores[nombre].puntos += pts;
+    }
+  });
+
+  const ranking = getRanking();
+  sala_set('estado', {tipo:'ranking', ranking});
+
+  // Mostrar resultado
+  document.getElementById('p-resp-txt').textContent = p.ops[p.ok];
+  document.getElementById('p-resp-exp').textContent = p.fb;
+  document.getElementById('btn-sig-q').textContent =
+    qActual >= ordenPQ.length-1 ? '🏆 VER RESULTADO FINAL' : 'SIGUIENTE PREGUNTA →';
+
+  const rl = document.getElementById('p-rank-parcial');
+  rl.innerHTML = '';
+  const maxP = ranking[0]?.puntos||1;
+  ranking.slice(0,5).forEach((j,i)=>{
+    const d=document.createElement('div');
+    d.className='rank-item';
+    d.innerHTML=`<div class="rk-pos ${i<3?'p'+(i+1):'pN'}">${i<3?['🥇','🥈','🥉'][i]:i+1}</div>
+      <div style="flex:1"><div class="rk-nombre">${j.nombre}</div>
+      <div class="rk-barra-w"><div class="rk-barra" style="width:${j.puntos/maxP*100}%"></div></div></div>
+      <div class="rk-pts">${j.puntos}</div>`;
+    rl.appendChild(d);
+  });
+
+  ir('s-pres-resultado');
+}
+
+function presSiguiente(){
+  qActual++;
+  if(qActual >= ordenPQ.length){
+    presFinal();
+  } else {
+    sala_set('estado', {tipo:'pregunta', qNum:qActual, orden:ordenPQ});
+    presMostrarPregunta();
+    ir('s-pres-pregunta');
+  }
+}
+
+function presFinal(){
+  const ranking = getRanking();
+  sala_set('estado', {tipo:'fin', ranking});
+
+  // Podio
+  const podio = document.getElementById('p-podio');
+  podio.innerHTML = '';
+  const orden3 = ranking.length>=3
+    ? [ranking[1], ranking[0], ranking[2]]
+    : ranking.length===2 ? [ranking[1], ranking[0]] : [ranking[0]];
+  const clases = ranking.length>=3 ? ['p2','p1','p3'] : ranking.length===2?['p2','p1']:['p1'];
+  const emojis = ranking.length>=3 ? ['🥈','🥇','🥉'] : ranking.length===2?['🥈','🥇']:['🥇'];
+  orden3.forEach((j,i)=>{
+    if(!j) return;
+    const d=document.createElement('div');
+    d.className=`pd-item ${clases[i]}`;
+    d.innerHTML=`<div class="pd-emoji">${emojis[i]}</div>
+      <div class="pd-nombre">${j.nombre}</div>
+      <div class="pd-pts">${j.puntos} pts</div>`;
+    podio.appendChild(d);
+  });
+
+  const rl=document.getElementById('p-rank-final');
+  rl.innerHTML='';
+  const maxP=ranking[0]?.puntos||1;
+  ranking.forEach((j,i)=>{
+    const d=document.createElement('div');
+    d.className='rank-item';
+    d.innerHTML=`<div class="rk-pos ${i<3?'p'+(i+1):'pN'}">${i<3?['🥇','🥈','🥉'][i]:i+1}</div>
+      <div style="flex:1"><div class="rk-nombre">${j.nombre}</div>
+      <div class="rk-barra-w"><div class="rk-barra" style="width:${j.puntos/maxP*100}%"></div></div></div>
+      <div class="rk-pts">${j.puntos} pts</div>`;
+    rl.appendChild(d);
+  });
+
+  ir('s-pres-final');
+}
+
+function getRanking(){
+  return Object.entries(jugadores)
+    .map(([nombre,j])=>({nombre,puntos:j.puntos}))
+    .sort((a,b)=>b.puntos-a.puntos);
+}
+
+function nuevoJuego(){
+  clearInterval(pollingInt);
+  jugadores={};
+  qActual=0;
+  miCodigo = Math.floor(1000+Math.random()*9000).toString();
+  Object.keys(localStorage).filter(k=>k.startsWith('sala_')).forEach(k=>localStorage.removeItem(k));
+  sala_set('activa',{ts:Date.now()});
+  sala_set('jugadores',{});
+  sala_set('estado',{tipo:'espera'});
+  document.getElementById('p-codigo').textContent=miCodigo;
+  document.getElementById('p-jug-grid').innerHTML='';
+  document.getElementById('p-njug').textContent='0';
+  document.getElementById('btn-iniciar').disabled=true;
+  pollingInt=setInterval(presActualizarJugadores,1000);
+  ir('s-pres-espera');
+}
+
+// ═══ JUGADOR ═══
+function jugUnirse(){
+  const cod = document.getElementById('j-cod').value.trim();
+  const nom = document.getElementById('j-nom').value.trim();
+  if(cod.length<4){ alert('Ingresa el código de 4 dígitos.'); return; }
+  if(!nom){ alert('Ingresa tu nombre o apodo.'); return; }
+
+  // Verificar sala
+  miCodigo = cod;
+  const activa = sala_get('activa');
+  if(!activa){
+    document.getElementById('j-error').style.display='block';
+    return;
+  }
+  document.getElementById('j-error').style.display='none';
+  miNombre = nom;
+  miPuntos = 0;
+
+  // Registrar jugador
+  const jugs = sala_get('jugadores')||{};
+  jugs[nom] = {ts:Date.now()};
+  sala_set('jugadores', jugs);
+
+  document.getElementById('j-nom-display').textContent = '🎮 '+nom;
+  ir('s-jug-espera');
+  startPolling();
+}
+
+function jugMostrarPregunta(){
+  respondio = false;
+  const p = PQ[ordenPQ[qActual]];
+  const total = ordenPQ.length;
+
+  document.getElementById('j-qnum').textContent = `P ${qActual+1}/${total}`;
+  document.getElementById('j-cat').textContent = p.cat;
+  document.getElementById('j-txt').textContent = p.q;
+
+  const cols=['A','B','C','D'];
+  const opsEl=document.getElementById('j-ops');
+  opsEl.innerHTML='';
+  p.ops.forEach((op,i)=>{
+    const btn=document.createElement('button');
+    btn.className=`jq-op ${cols[i]}`;
+    btn.innerHTML=`<span class="jl">${cols[i]}</span><span class="jt">${op}</span>`;
+    btn.onclick=()=>jugResponder(i,btn);
+    opsEl.appendChild(btn);
+  });
+
+  ir('s-jug-pregunta');
+  tRestante=TIEMPO;
+  document.getElementById('j-timer').textContent=tRestante;
+  clearInterval(timerInt);
+  const tStart=Date.now();
+  timerInt=setInterval(()=>{
+    tRestante--;
+    document.getElementById('j-timer').textContent=tRestante;
+    if(tRestante<=0){
+      clearInterval(timerInt);
+      if(!respondio){
+        document.querySelectorAll('.jq-op').forEach(b=>b.disabled=true);
+        jugMostrarFeedback(false,0);
+      }
+    }
+  },1000);
+}
+
+function jugResponder(idx, btnEl){
+  if(respondio) return;
+  respondio=true;
+  clearInterval(timerInt);
+  const tUsado = TIEMPO - tRestante;
+  document.querySelectorAll('.jq-op').forEach(b=>b.disabled=true);
+  btnEl.classList.add('elegida');
+
+  // Guardar respuesta
+  const resps = sala_get('respuestas_'+qActual)||{};
+  resps[miNombre] = {idx, t:tUsado};
+  sala_set('respuestas_'+qActual, resps);
+
+  const p = PQ[ordenPQ[qActual]];
+  const esOk = idx===p.ok;
+  const pts = esOk ? Math.max(400, Math.round(1000*(1-tUsado/TIEMPO))) : 0;
+  if(esOk) miPuntos+=pts;
+  jugMostrarFeedback(esOk, pts);
+}
+
+function jugMostrarFeedback(esOk, pts){
+  document.getElementById('jf-ico').textContent = esOk?'✅':'❌';
+  document.getElementById('jf-tit').textContent = esOk?'¡Correcto!':'Incorrecto';
+  document.getElementById('jf-tit').style.color = esOk?'var(--verde)':'var(--rojo)';
+  document.getElementById('jf-pts').textContent = esOk?`+${pts} pts`:'0 pts';
+  document.getElementById('jf-total').textContent = `Total: ${miPuntos} pts`;
+  ir('s-jug-feedback');
+}
+
+function jugMostrarRanking(ranking){
+  const pos = ranking.findIndex(j=>j.nombre===miNombre)+1;
+  document.getElementById('jr-mipos').textContent = '#'+pos;
+  document.getElementById('jr-minom').textContent = miNombre;
+  document.getElementById('jr-mipts').textContent = miPuntos+' puntos';
+
+  const lista=document.getElementById('jr-lista');
+  lista.innerHTML='';
+  ranking.forEach((j,i)=>{
+    const d=document.createElement('div');
+    d.className='jr-item'+(j.nombre===miNombre?' yo':'');
+    d.innerHTML=`<div class="ji-pos ${i<3?'p'+(i+1):'pN'}">${i<3?['🥇','🥈','🥉'][i]:i+1}</div>
+      <div class="ji-nombre">${j.nombre}${j.nombre===miNombre?' (tú)':''}</div>
+      <div class="ji-pts">${j.puntos}</div>`;
+    lista.appendChild(d);
+  });
+  ir('s-jug-ranking');
+}
+
+function jugMostrarFinal(ranking){
+  const pos = ranking.findIndex(j=>j.nombre===miNombre)+1;
+  const total = ranking.length;
+  const meds=['🥇','🥈','🥉'];
+  document.getElementById('jfin-med').textContent = pos<=3?meds[pos-1]:'🎖️';
+  document.getElementById('jfin-pos').textContent = '#'+pos;
+  document.getElementById('jfin-de').textContent = `de ${total} participantes`;
+  document.getElementById('jfin-nom').textContent = miNombre;
+  document.getElementById('jfin-pts').textContent = miPuntos+' puntos';
+  const msgs=['¡Eres el campeón del SIG! 🏆','¡Excelente resultado! 💪','¡Buen trabajo! 👍','Sigue repasando la capacitación 📖'];
+  document.getElementById('jfin-msg').textContent = pos===1?msgs[0]:pos===2?msgs[1]:pos<=3?msgs[2]:msgs[3];
+  ir('s-jug-final');
+}
+
+function shuffle(a){return[...a].sort(()=>Math.random()-.5)}
+</script>
+</body>
+</html>
